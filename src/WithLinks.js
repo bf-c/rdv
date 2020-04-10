@@ -17,7 +17,7 @@ export default LinkConsumer =>
     async componentDidMount() {
       const pathname = window.location.pathname;
       const matches = pathname.match(
-        /^\/r\/([0-9a-zA-Z_]+)(\/[a-z]+)?(\/[a-z]+)$/,
+        /^\/r\/([0-9a-zA-Z_]+)(\/[a-z]+)?(\/[a-z]+)?$/,
       );
       if (!matches) {
         if (pathname !== '/') {
@@ -27,7 +27,7 @@ export default LinkConsumer =>
       } else {
         const subreddit = matches[1];
         const sort = (matches[2] && matches[2].substr(1)) || 'hot';
-        const duration = (matches[3] && matches[3].substr(1)) || 'all';
+        const duration = (matches[3] && matches[3].substr(1)) || 'day';
         this.setState({ subreddit, sort, duration });
         const resp = await fetch(
           `https://www.reddit.com/r/${subreddit}/${sort}.json?t=${duration}`,

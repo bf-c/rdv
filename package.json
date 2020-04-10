@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://bf-v.github.io/bfv",
   "dependencies": {
+    "gh-pages": "^2.2.0",
     "papaparse": "^4.6.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
@@ -13,7 +14,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
