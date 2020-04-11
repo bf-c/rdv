@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
 import Show from './Show';
 import './Viewer.css';
+import { Swipeable } from 'react-swipeable';
+
+const enterFullScreen = video => {
+  if (video) {
+    (
+      video.requestFullscreen ||
+      video.webkitRequestFullScreen ||
+      video.mozRequestFullScreen ||
+      video.msRequestFullScreen ||
+      video.webkitEnterFullScreen ||
+      (() => null)
+    ).bind(video)();
+  }
+};
 
 export default class Viewer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { pos: 0 };
-  }
+  state = { pos: 0, muted: true };
 
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeys);
@@ -30,16 +41,7 @@ export default class Viewer extends Component {
       case 'KeyD':
         return this.next();
       case 'KeyF':
-        if (video) {
-          (
-            video.requestFullscreen ||
-            video.webkitRequestFullScreen ||
-            video.mozRequestFullScreen ||
-            video.msRequestFullScreen ||
-            video.webkitEnterFullScreen ||
-            (() => null)
-          ).bind(video)();
-        }
+        video && enterFullScreen(video);
         return;
       case 'Space':
         if (video) {
@@ -57,14 +59,14 @@ export default class Viewer extends Component {
 
   next = () => {
     const { pos } = this.state;
-    const { links } = this.props;
-    if (pos < links.length) {
+    const { posts } = this.props;
+    if (pos < posts.length) {
       this.setState(
-        ({ pos }, { links }) => ({
-          pos: pos < links.length ? pos + 1 : pos,
+        ({ pos }, { posts }) => ({
+          pos: pos < posts.length ? pos + 1 : pos,
         }),
         () => {
-          if (this.state.pos === this.props.links.length - 1) {
+          if (this.state.pos === this.props.posts.length - 1) {
             this.props.onLastReach();
           }
         },
@@ -80,19 +82,37 @@ export default class Viewer extends Component {
 
   render() {
     const { pos } = this.state;
-    const { links } = this.props;
+    const { posts } = this.props;
     return (
-      <div className="viewer-container">
+      <Swipeable
+        className="viewer-container"
+        onSwipedLeft={() => {
+          this.next();
+        }}
+        onSwipedRight={() => {
+          this.prev();
+        }}
+      >
         <div className="button-container">
           <button disabled={pos === 0} onClick={this.prev}>
             Previous
           </button>
-          <button disabled={pos === links.length - 1} onClick={this.next}>
+          <label>
+            <input
+              type="checkbox"
+              checked={this.state.muted}
+              onChange={e => {
+                this.setState({ muted: e.target.checked });
+              }}
+            />{' '}
+            Mute
+          </label>
+          <button disabled={pos === posts.length - 1} onClick={this.next}>
             Next
           </button>
         </div>
-        <Show link={links[pos]} />
-      </div>
+        <Show post={posts[pos]} muted={this.state.muted} />
+      </Swipeable>
     );
   }
 }

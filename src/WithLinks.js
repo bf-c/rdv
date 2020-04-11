@@ -1,34 +1,43 @@
 import React, { Component } from 'react';
 import './WithLinks.css';
 
-function shuffled(inp) {
-  const arr = inp.slice();
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
 export default LinkConsumer =>
   class extends Component {
-    state = { subreddit: null, sort: null, posts: [], links: [] };
+    state = {
+      subreddit: null,
+      sort: null,
+      duration: null,
+      posts: [],
+      links: [],
+      isHome: true,
+      loading: true,
+    };
 
-    async componentDidMount() {
-      const pathname = window.location.pathname;
+    componentDidMount() {
+      this.handleHashChange();
+      window.addEventListener('hashchange', this.handleHashChange);
+    }
+
+    componentWillUnmount() {
+      window.removeEventListener('hashchange', this.handleHashChange);
+    }
+
+    handleHashChange = async () => {
+      const pathname = window.location.hash;
       const matches = pathname.match(
-        /^\/r\/([0-9a-zA-Z_]+)(\/[a-z]+)?(\/[a-z]+)?$/,
+        /^#\/r\/([0-9a-zA-Z_]+)\/?(\/[a-z]+)?\/?(\/[a-z]+)?\/?$/,
       );
       if (!matches) {
-        if (pathname !== '/') {
-          window.location.pathname = '/';
+        this.setState({ isHome: true });
+        if (pathname !== '') {
+          window.location.hash = '';
           return;
         }
       } else {
+        this.setState({ isHome: false, loading: true });
         const subreddit = matches[1];
         const sort = (matches[2] && matches[2].substr(1)) || 'hot';
         const duration = (matches[3] && matches[3].substr(1)) || 'day';
-        this.setState({ subreddit, sort, duration });
         const resp = await fetch(
           `https://www.reddit.com/r/${subreddit}/${sort}.json?t=${duration}`,
         );
@@ -38,9 +47,9 @@ export default LinkConsumer =>
           .filter(child => !child.is_self)
           .filter(child => !child.url.startsWith('https://www.reddit.com/'));
         console.log(posts);
-        this.setState({ posts });
+        this.setState({ subreddit, sort, duration, posts, loading: false });
       }
-    }
+    };
 
     handleLastReach = async () => {
       const { posts, subreddit, sort, duration } = this.state;
@@ -56,16 +65,28 @@ export default LinkConsumer =>
           .map(child => child.data)
           .filter(child => !child.is_self)
           .filter(child => !child.url.startsWith('https://www.reddit.com/'));
-        this.setState(({ posts }) => {
-          const milan = [...posts, ...newPosts];
-          console.warn({ milan });
-          return { posts: milan };
-        });
+        this.setState(({ posts }) => ({ posts: [...posts, ...newPosts] }));
       }
     };
 
     render() {
-      if (this.state.posts.length === 0) {
+      if (this.state.isHome) {
+        return (
+          <div
+            style={{
+              backgroundColor: 'black',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <div style={{ color: 'white' }}>Welcome</div>
+          </div>
+        );
+      }
+      if (this.state.loading || this.state.posts.length === 0) {
         return (
           <div
             style={{
@@ -84,7 +105,10 @@ export default LinkConsumer =>
       return (
         <LinkConsumer
           onLastReach={this.handleLastReach.bind(this)}
-          links={this.state.posts.map(post => post.url)}
+          posts={this.state.posts}
+          subreddit={this.state.subreddit}
+          sort={this.state.sort}
+          duration={this.state.duration}
         />
       );
     }

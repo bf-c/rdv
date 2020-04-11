@@ -25,13 +25,9 @@ const GfycatStore = (() => {
       if (!(gfyId in store)) {
         const resp = await fetch(`https://api.gfycat.com/v1/gfycats/${gfyId}`);
         const json = await resp.json();
-        console.log(json);
         store[gfyId] = {
           url:
-            json.gfyItem.webmUrl ||
-            json.gfyItem.webpUrl ||
-            json.gfyItem.mp4Url ||
-            json.gfyItem.gifUrl,
+            json.gfyItem.webmUrl || json.gfyItem.mp4Url || json.gfyItem.gifUrl,
           expiresAt: new Date().getTime() + 1 * 24 * 60 * 60 * 1000, // 1 day
         };
       }
@@ -45,13 +41,21 @@ class Gfycat extends Component {
   constructor(props) {
     super(props);
     this.state = { webmUrl: null };
-    GfycatStore.get(props.url.pathname.substr(1))
+    GfycatStore.get(props.url.pathname.split('/').pop())
       .then(webmUrl => this.setState({ webmUrl }))
       .catch(err => console.error(err));
   }
 
   render() {
-    return <video autoPlay loop controls src={this.state.webmUrl} />;
+    return (
+      <video
+        autoPlay
+        loop
+        controls
+        src={this.state.webmUrl}
+        muted={this.props.muted}
+      />
+    );
   }
 }
 
@@ -108,7 +112,7 @@ class Img extends Component {
   }
 }
 
-const Strategy = ({ url }) => {
+const Strategy = ({ url, muted }) => {
   let title, src;
   switch (true) {
     case url.host === 'i.imgur.com':
@@ -125,13 +129,13 @@ const Strategy = ({ url }) => {
     case tumblr_re.test(url.host):
       return <Img url={url} />;
     case url.host === 'gfycat.com':
-      return <Gfycat url={url} />;
+      return <Gfycat url={url} muted={muted} />;
     case url.host === 'www.xvideos.com':
       title = 'xvideos';
       src =
         url.origin + '/embedframe/' + url.pathname.match(/\/video(\d+)\//)[1];
       break;
-    case (url.host.endsWith('.pornhub.com') || url.host.endsWith('.pornhub.org')):
+    case url.host.endsWith('.pornhub.com') || url.host.endsWith('.pornhub.org'):
       title = 'pornhub';
       src = 'https://www.pornhub.com/embed/' + url.searchParams.get('viewkey');
       break;
@@ -166,7 +170,8 @@ const Strategy = ({ url }) => {
   return <Iframe src={src} title={title} />;
 };
 
-export default function Show({ link: source, style }) {
+export default function Show({ post, style, muted }) {
+  const { url: source, permalink } = post;
   console.log(source);
   const url = new URL(source);
   return (
@@ -182,9 +187,16 @@ export default function Show({ link: source, style }) {
       >
         <a href={url} target="_blank" rel="noopener noreferrer">
           Source
+        </a>{' '}
+        <a
+          href={'https://www.reddit.com' + permalink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Reddit
         </a>
       </div>
-      <Strategy url={url} />
+      <Strategy url={url} muted={muted} />
     </div>
   );
 }
