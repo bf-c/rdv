@@ -20,6 +20,7 @@
 	border-radius: 4px;
 	background-color: #35435A;
 	color: white;
+	font-size: 12px;
 }
 
 .viewer-container .button-container select {
@@ -35,7 +36,20 @@
 
 .viewer-container .button-container button {
 	margin: 0 10px;
-	padding: 12px 16px;
+	padding: 2px 6px;
+}
+
+.viewer-container .button-container input {
+	display: none;
+}
+
+.viewer-container .button-container input + label {
+	padding: 2px 6px;
+	background-color: red;
+}
+
+.viewer-container .button-container input:checked + label {
+	background-color: green;
 }
 
 .viewer-container .button-container button:hover {

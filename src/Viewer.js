@@ -97,16 +97,15 @@ export default class Viewer extends Component {
           <button disabled={pos === 0} onClick={this.prev}>
             Previous
           </button>
-          <label>
-            <input
-              type="checkbox"
-              checked={this.state.muted}
-              onChange={e => {
-                this.setState({ muted: e.target.checked });
-              }}
-            />{' '}
-            Mute
-          </label>
+          <input
+            id="mute"
+            type="checkbox"
+            checked={!this.state.muted}
+            onChange={e => {
+              this.setState({ muted: !e.target.checked });
+            }}
+          />{' '}
+          <label for="mute">Sound</label>
           <button disabled={pos === posts.length - 1} onClick={this.next}>
             Next
           </button>

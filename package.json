@@ -1,8 +1,8 @@
 {
-  "name": "bf_viewer",
+  "name": "rd_viewer",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://bf-v.github.io/bfv",
+  "homepage": "https://bf-c.github.io/rdv",
   "dependencies": {
     "gh-pages": "^2.2.0",
     "papaparse": "^4.6.2",

@@ -180,7 +180,6 @@ export default function Show({ post, style, muted }) {
         style={{
           flexGrow: 0,
           flexShrink: 0,
-          padding: 5,
           paddingTop: 0,
           color: 'white',
         }}
