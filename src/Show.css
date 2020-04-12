@@ -22,6 +22,10 @@ div.img {
 	flex-grow: 1;
 }
 
+.item-container > video:focus {
+	outline: none;
+}
+
 img.loading {
 	background: url(./static/loading.gif) center center no-repeat;
 }

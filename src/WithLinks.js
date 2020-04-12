@@ -25,7 +25,7 @@ export default LinkConsumer =>
     handleHashChange = async () => {
       const pathname = window.location.hash;
       const matches = pathname.match(
-        /^#\/r\/([0-9a-zA-Z_]+)\/?(\/[a-z]+)?\/?(\/[a-z]+)?\/?$/,
+        /^#\/r\/([0-9a-zA-Z_\+]+)\/?(\/[a-z]+)?\/?(\/[a-z]+)?\/?$/,
       );
       if (!matches) {
         this.setState({ isHome: true });

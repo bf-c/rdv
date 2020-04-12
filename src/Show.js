@@ -115,7 +115,7 @@ class Img extends Component {
 const Strategy = ({ url, muted }) => {
   let title, src;
   switch (true) {
-    case url.host === 'i.imgur.com':
+    case url.host === 'i.imgur.com' || url.host === 'imgur.com':
       if (url.pathname.slice(0, 3) === '/a/') {
         title = 'imgur';
         src =
@@ -124,8 +124,11 @@ const Strategy = ({ url, muted }) => {
           url.pathname.replace('.jpg', '') +
           '/embed?pub=true';
         break;
+      } else if (!url.pathname.includes('.')) {
+        url.pathname += '.jpg';
       }
     // eslint-disable-next-line -- FALLTHROUGH
+    case url.host === 'i.redd.it':
     case tumblr_re.test(url.host):
       return <Img url={url} />;
     case url.host === 'gfycat.com':

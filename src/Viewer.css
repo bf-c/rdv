@@ -21,6 +21,13 @@
 	background-color: #35435A;
 	color: white;
 	font-size: 12px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
+
+.viewer-container .button-container > *:focus {
+	outline: none;
 }
 
 .viewer-container .button-container select {
@@ -44,6 +51,7 @@
 }
 
 .viewer-container .button-container input + label {
+	cursor: pointer;
 	padding: 2px 6px;
 	background-color: red;
 }
