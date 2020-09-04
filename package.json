@@ -5,7 +5,7 @@
   "homepage": "https://bf-c.github.io/rdv",
   "dependencies": {
     "gh-pages": "^2.2.0",
-    "papaparse": "^4.6.2",
+    "papaparse": "^5.2.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-scripts": "2.1.1",
